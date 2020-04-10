@@ -1,38 +1,77 @@
-.App {
-  text-align: center;
+.gameContainer{
+  display: flex;
+  justify-content:  center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.game{
+  height: 100vh;
+  width: 100vw;
+  max-height: 450px;
+  max-width: 330px;
+  border: 1px solid black;
+  padding: 20px;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.game-top{
+  height: 60px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
+}
+.gameLevel{
+  font-size: 39px;
+  font-weight: bold;
+}
+.gameStatus{
+  font-size: 18px;
+  font-weight: "300";
+  margin-bottom: 20px;
+}
+.gameBoxs{
+  height: calc(100% - 50px);
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+}
+.button{
+  height: 50px;
+  width: 50px;
+  border: 2px solid black;
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.activeBox{
+  background-color: black;
+}
+.activeBoxText{
   color: white;
 }
-
-.App-link {
-  color: #61dafb;
+.userSelectBox{
+  background-color:green;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@media only screen and (max-width: 600px) {
+  .game {
+    max-width: 100vw;
+    max-height: 550px;
+    padding: 0;
+    border: 0;
   }
-  to {
-    transform: rotate(360deg);
+  .gameBoxs{
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+  .button{
+    height: 50px;
+    width: 50px;
   }
 }
