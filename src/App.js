@@ -87,6 +87,7 @@ const LoginScreen = () => {
                 <input onClick={Play} type="button" className="button"></input>
               </div>
             </div>
+            Samet Özkan
           </div>
       }
     </div>
