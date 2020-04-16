@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
+import './App.css';
 
 
 
 const LoginScreen = () => {
 
     const [randomUserName, setRandomUsername] = useState();
+    const [bestScore, setBestScore] = useState(0);
 
     const getUserData = async () => {
         const data = await Axios.get(global.apiUrl + "/user/" + global.userId);
@@ -14,7 +16,7 @@ const LoginScreen = () => {
             await localStorage.setItem("username", data.data.userName.toString())
             return data.data;
         }
-        await localStorage.setItem("bestScore", "0");
+        await localStorage.setItem("bestScore", bestScore);
         await localStorage.setItem("username", global.randomUserName)
         return false;
     }
@@ -24,13 +26,24 @@ const LoginScreen = () => {
         return userName;
     }
 
+    const Play = async () => {
+        if (randomUserName) {
+            Axios.post(global.apiUrl + "/addRanking", { score: bestScore, userId: global.userId, userName: randomUserName }).then(result => {
+                console.log("sdf");
+            })
+        }
+        else {
+            alert("Kullanıcı adı giriniz");
+        }
+    }
+
     const changeUsername = async (value) => {
         var userArray = {
             userName: value,
             id: global.userId,
         }
         await localStorage.setItem("username", value);
-        await global.server.emit("changeUsername", userArray);
+        await Axios.post(global.apiUrl + "changeUsername", userArray);
         return true;
     }
 
@@ -40,6 +53,7 @@ const LoginScreen = () => {
             .then(res => {
                 if (res) {
                     setRandomUsername(res.userName);
+                    setBestScore(res.score);
                 }
             })
             .catch(error => {
@@ -59,9 +73,10 @@ const LoginScreen = () => {
 
             </div>
             <div className="login-box">
-                <input value={randomUserName} type="text" className="randomusername" placeholder="Kullanıcı adı"></input>
+                <div className="bestScore">En iyi skorun : {bestScore}</div>
+                <input type="text" value={randomUserName} onChange={(e) => setRandomUsername(e.target.value)} className="randomusername" placeholder="Kullanıcı adı" />
                 <div className="login-bottom-cont">
-                    <input type="button" className="button"></input>
+                    <input onClick={() => Play()} type="button" className="button"></input>
                     <input type="button" className="button"></input>
                 </div>
             </div>

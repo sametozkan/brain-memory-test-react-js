@@ -13,6 +13,67 @@
   border: 1px solid black;
   padding: 20px;
 }
+.gameContainer .game .login-box{
+  height: 225px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+.gameContainer .game .login-box .logo-title{
+  font-size: 34px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+.gameContainer .game .login-box .logo{
+  background: url('./Images/logo.png') no-repeat;
+  background-size: 130px;
+  height: 130px;
+  width: 130px;
+}
+.gameContainer .game .login-box .login-bottom-cont{
+  height: 80px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.gameContainer .game .login-box .randomusername{
+  margin-bottom: 20px;
+}
+.gameContainer .game .login-box .button{
+  height: 80px;
+  width: 110px;
+  margin-right: 20px;
+  border-radius: 30px;
+  border: 2px solid black;
+  outline: none;
+}
+.gameContainer .game .login-box .button:active{
+  opacity: 0.5;
+}
+.gameContainer .game .login-box .bestScore{
+  font-weight: bold;
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+.gameContainer .game .login-box .button:first-child{
+  background: url('./Images/play.png') no-repeat;
+  background-position: center;
+  background-size: 30px;
+}
+.replay{
+  background: url('./Images/replay.png') no-repeat;
+  background-position: center;
+  background-size: 30px;
+  height: 80px;
+  width: 110px;
+  margin-right: 20px;
+  border-radius: 30px;
+  border: 2px solid black;
+  outline: none;
+}
 .game-top{
   height: 60px;
   width: 100%;
@@ -39,7 +100,7 @@
   justify-content: center;
   align-items: center;
 }
-.button{
+.int-button{
   height: 50px;
   width: 50px;
   border: 2px solid black;
@@ -48,6 +109,9 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+.int-button:active{
+  opacity: 0.5;
 }
 .activeBox{
   background-color: black;

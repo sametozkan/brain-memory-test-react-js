@@ -1,186 +1,96 @@
-import React, { useState, useEffect, } from 'react';
+import React, { useEffect, useState } from 'react';
+import Axios from 'axios';
+import GameScreen from './Screens/App/GameScreen';
 import './App.css';
-console.disableYellowBox = true;
-
-//Oyunun seçtiği sayılar
-var gameRandomSelectedBox = [];
-//Kullanıcının seçtiği sayılar
-var userSelectedBox = [];
-//Level 10dan sonra kutuların yerlerlerini değiştirmek için gerekli array.
-var randomGameBoxs = [];
-// randomBoxCount
-var randomBoxCount = 0;
-
-var randomBoxInterval;
-
-var gameLevel = 1;
 
 
 
-const GameScreen = ({ navigation }) => {
-  //Oyun ayarları
-  const [boxs, setBoxs] = useState([
-    0, 1, 2, 3, 4, 5, 6,
-    7, 8, 9, 10, 11, 12, 13,
-    14, 15, 16, 17, 18, 19, 20,
-    21, 22, 23, 24, 25, 26, 27,
-    28, 29,
-  ])
+const LoginScreen = () => {
 
+  const [randomUserName, setRandomUsername] = useState();
+  const [bestScore, setBestScore] = useState(0);
+  const [stepGame, setStepGame] = useState(false);
 
-  const [gameSelectedBox, setGameSelectedBox] = useState();
-  const [gameStatus, setGameStatus] = useState(false);
-  const [currentTime, setCurrentTime] = useState(2000);
-  const [randomCreateBoxs, setRandomCreateBox] = useState(false);
-  const [selectIndex, setSelectIndex] = useState(0);
+  const getUserData = async () => {
+    const data = await Axios.get(global.apiUrl + "/user/" + global.userId);
+    if (data) {
+      await localStorage.setItem("bestScore", data.data.score.toString())
+      await localStorage.setItem("username", data.data.userName.toString())
+      return data.data;
+    }
+    await localStorage.setItem("bestScore", bestScore);
+    await localStorage.setItem("username", global.randomUserName)
+    return false;
+  }
+
+  const getOfflineUserData = async () => {
+    const userName = await localStorage.getItem("username");
+    return userName;
+  }
+
+  const Play = () => {
+    if (randomUserName) {
+      Axios.post(global.apiUrl + "/addRanking", { score: bestScore, userId: global.userId, userName: randomUserName }).then(result => {
+        setStepGame(true);
+      })
+    }
+    else {
+      alert("Kullanıcı adı giriniz");
+    }
+  }
+
+  const changeUsername = async (value) => {
+    var userArray = {
+      userName: value,
+      id: global.userId,
+    }
+    await localStorage.setItem("username", value);
+    await Axios.post(global.apiUrl + "/changeUsername", userArray);
+    return true;
+  }
+
 
   useEffect(() => {
-    startGame();
+    getUserData()
+      .then(res => {
+        if (res) {
+          setRandomUsername(res.userName);
+          setBestScore(res.score);
+        }
+      })
+      .catch(error => {
+        getOfflineUserData().then(res => {
+          setRandomUsername(res);
+        })
+      })
     return () => {
 
     }
   }, [])
-
-
-
-  //Oyunu başlatır
-  const startGame = () => {
-    //Oyunu başlat
-    setGameStatus(true);
-    //randomBoxInterval : Rastgele levele göre sayı seçer
-    randomBoxInterval = setInterval(() => {
-      var newSelectedBox = Math.floor(Math.random() * 30);
-      if (gameRandomSelectedBox.length === gameLevel) {
-        setGameSelectedBox();
-        clearInterval(randomBoxInterval);
-        setGameStatus(false);
-      }
-      //Ard arda aynı sayı gelmemesi için gerekli kod
-      else if (newSelectedBox === gameRandomSelectedBox[gameRandomSelectedBox.length - 1]) {
-        newSelectedBox = newSelectedBox + 1;
-      }
-      else {
-        //Level 11 den az seviyedeyse 10 tane sayı eklemeye kadar burası çalışırç
-        gameRandomSelectedBox.push(newSelectedBox);
-        setGameSelectedBox(newSelectedBox);
-      }
-
-
-
-
-      console.log("Seçilen kutular " + gameRandomSelectedBox);
-    }, currentTime);
-  }
-
-  //Oyunu seviyesini arttırır
-  const nexLevel = () => {
-
-    console.log("BURDASIN!!!!");
-
-    if (gameLevel >= 11) {
-      setRandomCreateBox(true);
-
-      while (randomBoxCount < 30) {
-        const newSelectedBox = Math.floor(Math.random() * 30);
-        const controlBox = randomGameBoxs.findIndex(item => item === newSelectedBox)
-        console.log("Var mı ?" + controlBox)
-        if (controlBox < 0) {
-          randomGameBoxs.push(newSelectedBox);
-          randomBoxCount++;
-          if (randomBoxCount === 30) {
-            setBoxs(randomGameBoxs)
-            setRandomCreateBox(false);
-
-          }
-        }
-      }
-    }
-    if (!currentTime <= 500) {
-      setCurrentTime(currentTime - 100);
-    }
-    gameLevel++;
-    setSelectIndex(0);
-    console.log("ŞUANKİ LEVELİN ARTTI! " + gameLevel)
-    setGameStatus(false);
-    setGameSelectedBox();
-    setRandomCreateBox(false);
-    gameRandomSelectedBox = [];
-    userSelectedBox = [];
-    randomBoxCount = 0;
-    randomGameBoxs = [];
-    return true;
-  }
-
-  //Oyunu sıfırlar
-  const resetGame = () => {
-    gameLevel = 1;
-    randomGameBoxs = [];
-    randomBoxCount = 0;
-    gameRandomSelectedBox = [];
-    userSelectedBox = [];
-    setGameStatus(true);
-    setSelectIndex(0);
-    setRandomCreateBox(false);
-    startGame();
-    return true;
-  }
-
-  //Kullacının seçtiği kutular
-  const userBoxSelect = (boxNumber) => {
-    console.log(selectIndex);
-
-    console.log("Seçilen : " + boxNumber + "===" + "Oyunun seçtiği : " + gameRandomSelectedBox[selectIndex])
-
-
-    //Kullanıcı doğru kutuları seçiyorlarsa bu kısım çalışır.
-    //Kullanıcının seçtiği kutular trueSelected'e aktarılır
-    if (boxNumber === gameRandomSelectedBox[selectIndex]) {
-      console.log("Doğru seçilen kutu : " + boxNumber)
-      userSelectedBox.push(boxNumber);
-      setSelectIndex(selectIndex + 1);
-      if (gameRandomSelectedBox.length == userSelectedBox.length) {
-        console.log("YENİ SEVİYEYE GEÇTİN!")
-        nexLevel();
-        startGame();
-      }
-    }
-    else {
-      console.log("Kaybettin...");
-      resetGame();
-    }
-
-    console.log(userSelectedBox + " : " + gameRandomSelectedBox)
-  }
-
-  const renderBoxs = boxs.map(boxNumber => {
-    return (
-      <div
-        className={boxNumber === gameSelectedBox ? "button activeBox"
-          : userSelectedBox.findIndex(item => item === boxNumber) > -1 ? "button userSelectBox" : "button"}
-        onClick={() => gameStatus ? null : userBoxSelect(boxNumber)}
-      >
-        <div className={boxNumber === gameSelectedBox ? "activeBoxText"
-          : userSelectedBox.findIndex(item => item === boxNumber) > -1 ? "activeBoxText" : ""}>
-          {boxNumber}
-        </div>
-
-      </div>
-    )
-  })
-
   return (
     <div className="gameContainer">
-      <div className="game">
-        <div className="game-top">
-          <div className="gameLevel">Level {gameLevel}</div>
-          <div className="gameStatus">{randomCreateBoxs ? "Kutuların yerleri değişiyor..." : gameStatus ? "Kutuları seçiyoruz...." : "Gösterilen kutuları sırayla seçin."}</div>
-        </div>
+      {
+        stepGame
+          ?
+          <GameScreen></GameScreen>
+          :
+          <div className="game">
+            <div className="login-box">
+              <div className="logo-title">BrainMemory</div>
+              <div className="logo"></div>
 
-        <div className="gameBoxs">
-          {renderBoxs}
-        </div>
-      </div>
+            </div>
+            <div className="login-box">
+              <div className="bestScore">En iyi skorun : {bestScore}</div>
+              <input type="text" onBlur={changeUsername} value={randomUserName} onChange={(e) => setRandomUsername(e.target.value)} className="randomusername" placeholder="Kullanıcı adı" />
+              <div className="login-bottom-cont">
+                <input onClick={Play} type="button" className="button"></input>
+              </div>
+            </div>
+          </div>
+      }
     </div>
   )
-};
-export default GameScreen;
+}
+
+export default LoginScreen;

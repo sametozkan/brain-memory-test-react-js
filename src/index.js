@@ -3,34 +3,29 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import io from 'socket.io-client';
 
 
-async function getUsername() {
-  const userName = await localStorage.getItem("userName");
-  return userName;
+var test = localStorage.getItem("bestScore");
+
+async function getUserId() {
+  const userId = await localStorage.getItem("userId");
+  return userId;
 }
 
-async function setUsername(value) {
-  await localStorage.setItem("userName", value);
+async function setUserId() {
+  localStorage.setItem("userId", Math.floor(Math.random() * 9999999999))
   return true;
 }
+global.apiUrl = "http://brainmemory.herokuapp.com";
 
-if (!global.server) {
-  global.server = io("http://brainmemory.herokuapp.com");
-}
-
-global.userId = Math.floor(Math.random() * 999999);
-global.userName = "user" + Math.floor(Math.random() * 999999);
-global.server.emit("addRanking", { score: 0, userId: global.userId, userName: global.userName });
-getUsername().then(result => {
-  console.log(result);
-  if (!result) {
-    setUsername(global.userName);
+getUserId().then(result => {
+  if (result) {
+    global.userId = result;
+  }
+  else {
+    setUserId();
   }
 })
-
-
 
 ReactDOM.render(
   <React.StrictMode>
